@@ -48,46 +48,41 @@ ${formData.message}
 Submitted at: ${new Date().toISOString()}
     `.trim();
 
-    // Send email via SendGrid
-    if (env.SENDGRID_API_KEY) {
-      const sendGridResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${env.SENDGRID_API_KEY}`,
-          'Content-Type': 'application/json',
+    // Send email via MailChannels (free with Cloudflare Workers)
+    const mailResponse = await fetch('https://api.mailchannels.net/tx/v1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        personalizations: [
+          {
+            to: [{ email: 'lana@genaiqueen.com', name: 'Lana' }],
+          },
+        ],
+        from: {
+          email: 'noreply@genaiqueen.com',
+          name: 'genaiqueen.com',
         },
-        body: JSON.stringify({
-          personalizations: [{
-            to: [{ email: env.RECIPIENT_EMAIL || 'lana@genaiqueen.com' }],
-            subject: `New GEO Inquiry from ${formData.name}`,
-          }],
-          from: {
-            email: 'noreply@genaiqueen.com',
-            name: 'genaiqueen.com'
-          },
-          reply_to: {
-            email: formData.email,
-            name: formData.name
-          },
-          content: [{
+        reply_to: {
+          email: formData.email,
+          name: formData.name,
+        },
+        subject: `New GEO Inquiry from ${formData.name}`,
+        content: [
+          {
             type: 'text/plain',
             value: emailBody,
-          }],
-        }),
-      });
+          },
+        ],
+      }),
+    });
 
-      if (!sendGridResponse.ok) {
-        const errorText = await sendGridResponse.text();
-        console.error('SendGrid error:', errorText);
-        return new Response(
-          JSON.stringify({ error: 'Failed to send email' }),
-          { status: 500, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-    } else {
-      console.error('SENDGRID_API_KEY not configured');
+    if (!mailResponse.ok) {
+      const errorText = await mailResponse.text();
+      console.error('MailChannels error:', errorText);
       return new Response(
-        JSON.stringify({ error: 'Email service not configured' }),
+        JSON.stringify({ error: 'Failed to send email' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
