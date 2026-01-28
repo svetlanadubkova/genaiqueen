@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>contact | genaiqueen</title>
+  <meta name="description" content="contact genaiqueen for generative engine optimization services. get your business recommended by chatgpt, claude, gemini, and other ai platforms. pay only for results.">
+  <meta name="keywords" content="hire GEO expert, generative engine optimization services, AI search optimization contact">
+
+  <meta property="og:title" content="contact | genaiqueen">
+  <meta property="og:description" content="get in touch about geo services.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://genaiqueen.com/contact">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="/" class="site-title">genaiqueen</a>
+      <ul>
+        <li><a href="/">home</a></li>
+        <li><a href="/offerings.html">offerings</a></li>
+        <li><a href="/essays.html">essays</a></li>
+        <li><a href="/about.html">about</a></li>
+        <li><a href="/contact.html" class="active">let's talk</a></li>
+      </ul>
+    </nav>
+
+    <section>
+      <h1>let's talk</h1>
+      <p>tell me about your business and what you're trying to achieve. i'll get back to you within 24 hours.</p>
+    </section>
+
+    <section>
+      <form id="contact-form" action="/api/contact" method="POST">
+        <div class="form-group">
+          <label for="name">name</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="business">business / website</label>
+          <input type="text" id="business" name="business" required placeholder="your business name or website url">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">phone <span class="optional">(optional)</span></label>
+          <input type="tel" id="phone" name="phone">
+        </div>
+
+        <div class="form-group">
+          <label for="tier">which tier interests you?</label>
+          <select id="tier" name="tier" required>
+            <option value="">select one</option>
+            <option value="tier1">tier 1: traditional visibility ($1,500)</option>
+            <option value="tier2">tier 2: ai recommendation ($3,000)</option>
+            <option value="tier3">tier 3: omnipresence ($5,000)</option>
+            <option value="not-sure">not sure yet</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">tell me about your business and what you're trying to achieve</label>
+          <textarea id="message" name="message" required placeholder="what does your business do? who are you trying to reach? what does success look like for you?"></textarea>
+        </div>
+
+        <button type="submit" class="btn">send message</button>
+      </form>
+
+      <div id="form-success" class="form-success">
+        thanks! i'll be in touch within 24 hours.
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section>
+      <p class="small muted">prefer email? reach me at <a href="mailto:lana@genaiqueen.com">lana@genaiqueen.com</a></p>
+    </section>
+
+    <footer>
+      always be planting 🌱
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          form.style.display = 'none';
+          document.getElementById('form-success').classList.add('visible');
+        } else {
+          alert('something went wrong. please try again or email me directly at lana@genaiqueen.com');
+        }
+      } catch (error) {
+        alert('something went wrong. please try again or email me directly at lana@genaiqueen.com');
+      }
+    });
+  </script>
+</body>
+</html>
