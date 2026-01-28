@@ -38,7 +38,6 @@ New GEO inquiry from genaiqueen.com
 Name: ${formData.name}
 Email: ${formData.email}
 Business/Website: ${formData.business}
-Phone: ${formData.phone || 'Not provided'}
 Interested In: ${tierLabels[formData.tier] || formData.tier}
 
 Message:
