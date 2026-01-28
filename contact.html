@@ -17,7 +17,7 @@
 <body>
   <div class="container">
     <nav>
-      <a href="/" class="site-title">genaiqueen</a>
+      <a href="/" class="site-title">genAI queen</a>
       <ul>
         <li><a href="/">home</a></li>
         <li><a href="/offerings.html">offerings</a></li>
@@ -33,7 +33,11 @@
     </section>
 
     <section>
-      <form id="contact-form" action="/api/contact" method="POST">
+      <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="b7df6803-08d0-4d32-b31b-e58108092f3f">
+        <input type="hidden" name="subject" value="new geo inquiry from genAI queen">
+        <input type="hidden" name="from_name" value="genAI queen">
+
         <div class="form-group">
           <label for="name">name</label>
           <input type="text" id="name" name="name" required>
@@ -65,6 +69,7 @@
           <textarea id="message" name="message" required placeholder="what does your business do? who are you trying to reach? what does success look like for you?"></textarea>
         </div>
 
+        <input type="hidden" name="redirect" value="https://genaiqueen.com/contact.html?success=true">
         <button type="submit" class="btn">send message</button>
       </form>
 
@@ -85,32 +90,11 @@
   </div>
 
   <script>
-    document.getElementById('contact-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          form.style.display = 'none';
-          document.getElementById('form-success').classList.add('visible');
-        } else {
-          alert('something went wrong. please try again or email me directly at lana@genaiqueen.com');
-        }
-      } catch (error) {
-        alert('something went wrong. please try again or email me directly at lana@genaiqueen.com');
-      }
-    });
+    // Show success message if redirected back after form submission
+    if (window.location.search.includes('success=true')) {
+      document.getElementById('contact-form').style.display = 'none';
+      document.getElementById('form-success').classList.add('visible');
+    }
   </script>
 </body>
 </html>
