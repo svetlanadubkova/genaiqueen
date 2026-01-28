@@ -1,5 +1,5 @@
 export async function onRequestPost(context) {
-  const { request, env } = context;
+  const { request } = context;
 
   try {
     const formData = await request.json();
@@ -15,86 +15,42 @@ export async function onRequestPost(context) {
       }
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid email address' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Format the email content
-    const tierLabels = {
-      'tier1': 'Tier 1: Traditional Visibility ($1,500)',
-      'tier2': 'Tier 2: AI Recommendation ($3,000)',
-      'tier3': 'Tier 3: Omnipresence ($5,000)',
-      'not-sure': 'Not sure yet',
-    };
-
-    const emailBody = `
-New GEO inquiry from genaiqueen.com
-
-Name: ${formData.name}
-Email: ${formData.email}
-Business/Website: ${formData.business}
-Interested In: ${tierLabels[formData.tier] || formData.tier}
-
-Message:
-${formData.message}
-
----
-Submitted at: ${new Date().toISOString()}
-    `.trim();
-
-    // Send email via MailChannels (free with Cloudflare Workers)
-    const mailResponse = await fetch('https://api.mailchannels.net/tx/v1/send', {
+    // Send via Web3Forms
+    const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        personalizations: [
-          {
-            to: [{ email: 'lana@genaiqueen.com', name: 'Lana' }],
-          },
-        ],
-        from: {
-          email: 'noreply@genaiqueen.com',
-          name: 'genaiqueen.com',
-        },
-        reply_to: {
-          email: formData.email,
-          name: formData.name,
-        },
+        access_key: 'b7df6803-08d0-4d32-b31b-e58108092f3f',
         subject: `New GEO Inquiry from ${formData.name}`,
-        content: [
-          {
-            type: 'text/plain',
-            value: emailBody,
-          },
-        ],
+        from_name: 'genaiqueen.com',
+        name: formData.name,
+        email: formData.email,
+        business: formData.business,
+        tier: formData.tier,
+        message: formData.message,
       }),
     });
 
-    if (!mailResponse.ok) {
-      const errorText = await mailResponse.text();
-      console.error('MailChannels error:', errorText);
+    const result = await response.json();
+
+    if (result.success) {
       return new Response(
-        JSON.stringify({ error: 'Failed to send email' }),
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    } else {
+      return new Response(
+        JSON.stringify({ error: 'Failed to send' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    return new Response(
-      JSON.stringify({ success: true, message: 'Form submitted successfully' }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
-
   } catch (error) {
-    console.error('Form submission error:', error);
+    console.error('Form error:', error);
     return new Response(
-      JSON.stringify({ error: 'Failed to process form submission' }),
+      JSON.stringify({ error: 'Failed to process' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
